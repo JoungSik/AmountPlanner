@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.6.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id "com.github.node-gradle.node" version "3.1.1"
 }
 
 group = 'com.joung'
@@ -32,3 +33,22 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+task yarnInstall(type: YarnTask) {
+    workingDir = file("${project.projectDir}/app")
+    args = ["install"]
+}
+
+task yarnBuild(type: YarnTask) {
+    workingDir = file("${project.projectDir}/app")
+    args = ['build']
+}
+
+task copyWebApp(type: Copy) {
+    from 'app/build'
+    into "build/resources/main/static"
+}
+
+yarnBuild.dependsOn yarnInstall
+copyWebApp.dependsOn yarnBuild
+compileJava.dependsOn copyWebApp
