@@ -21,7 +21,7 @@ public class TransactionDto {
 
         public Transaction asEntity() {
             return Transaction.builder()
-                    .data(LocalDate.parse(date, formatter).atStartOfDay())
+                    .data(LocalDate.parse(date, formatter))
                     .amount(amount)
                     .description(description)
                     .build();
