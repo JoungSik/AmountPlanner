@@ -14,6 +14,8 @@ public class UserDto {
     @Setter
     public static class Request {
         private Long id;
+        private String email;
+        private String password;
     }
 
     @Getter

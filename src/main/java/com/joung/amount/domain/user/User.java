@@ -2,6 +2,7 @@ package com.joung.amount.domain.user;
 
 import com.joung.amount.domain.transaction.Transaction;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,4 +32,11 @@ public class User {
 
     private String email;
     private String password;
+
+    @Builder
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
 }
