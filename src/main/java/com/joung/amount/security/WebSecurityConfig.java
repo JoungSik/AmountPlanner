@@ -44,10 +44,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // configure access rules
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers("/api/*").hasRole("USER")
+                .antMatchers("/api/*").hasRole("USER");
                 // .antMatchers("/api/public/management/*").hasRole("MANAGER")
                 // .antMatchers("/api/public/admin/*").hasRole("ADMIN")
-                .anyRequest().authenticated();
+                // .anyRequest().authenticated();
     }
 
     @Bean

@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+import { UserType } from 'src/models/UserType';
 
 const baseUrl = 'http://localhost:8080/';
 
@@ -28,4 +29,9 @@ export const requests = {
     post: (url: string, body: {}, jwt: string) => authInstance(jwt).post(url, body).then(responseBody),
     patch: (url: string, body: {}, jwt: string) => authInstance(jwt).put(url, body).then(responseBody),
     delete: (url: string, jwt: string) => authInstance(jwt).delete(url).then(responseBody),
+};
+
+export const User = {
+    register: (user: UserType) => instance.post('users', user),
+    login: (user: UserType) => instance.post('login', user),
 };
