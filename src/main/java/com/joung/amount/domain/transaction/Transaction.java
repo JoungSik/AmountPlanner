@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "transactions")
 public class Transaction {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,17 +32,18 @@ public class Transaction {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private LocalDateTime date;
+    private LocalDate date;
 
     private int amount;
 
     private String description;
 
     @Builder
-    public Transaction(User user, LocalDateTime data, int amount, String description) {
+    public Transaction(User user, LocalDate data, int amount, String description) {
         this.user = user;
         this.date = data;
         this.amount = amount;
         this.description = description;
     }
+
 }
