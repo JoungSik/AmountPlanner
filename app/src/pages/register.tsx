@@ -14,7 +14,7 @@ import { useHistory } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import useLocalStorage from 'src/utils/storage';
-import { UserType } from 'src/models/UserType';
+import { UserType } from 'src/models/user_type';
 import { User } from 'src/api';
 
 const Register = () => {

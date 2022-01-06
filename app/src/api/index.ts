@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { UserType } from 'src/models/UserType';
+import { UserType } from 'src/models/user_type';
 
 const baseUrl = 'http://localhost:8080/';
 

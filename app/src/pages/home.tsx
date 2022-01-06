@@ -1,10 +1,14 @@
 import React from 'react';
+import { Container, Wrap } from '@chakra-ui/react';
+import NewTransactionModal from 'src/components/modals/new_transaction';
 
 const Home = () => {
     return (
-        <div>
-            <h1>Hello World</h1>
-        </div>
+        <Container maxW="container.xl">
+            <Wrap spacing={4}>
+                <NewTransactionModal />
+            </Wrap>
+        </Container>
     );
 };
 

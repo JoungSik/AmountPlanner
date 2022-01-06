@@ -22,7 +22,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from 'react-query';
 
 import { User } from 'src/api';
-import { UserType } from 'src/models/UserType';
+import { UserType } from 'src/models/user_type';
 import useLocalStorage from 'src/utils/storage';
 
 const Login = () => {
