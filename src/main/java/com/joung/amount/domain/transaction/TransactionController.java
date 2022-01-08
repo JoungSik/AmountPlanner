@@ -2,6 +2,7 @@ package com.joung.amount.domain.transaction;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,16 +22,14 @@ public class TransactionController {
     }
 
     @GetMapping
-    @ResponseBody
     public List<TransactionDto.Response> getTransactions() {
         List<Transaction> transactions = transactionService.getTransactions();
         return transactions.stream().map(TransactionDto.Response::new).collect(Collectors.toList());
     }
 
     @PostMapping
-    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
     public TransactionDto.Response createTransaction(@RequestBody TransactionDto.Request request) {
-        System.out.println(request.getDate() + " / " + request.getAmount() + " / " + request.getDescription());
         Transaction transaction = transactionService.addTransaction(request);
         return new TransactionDto.Response(transaction);
     }
