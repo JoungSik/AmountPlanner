@@ -1,10 +1,14 @@
 package com.joung.amount.domain.transaction;
 
+import com.joung.amount.domain.user.User;
+import com.joung.amount.domain.user.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -26,6 +30,20 @@ class TransactionServiceTest {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    private User user;
+
+    @BeforeEach
+    @Transactional
+    void setUser() {
+        user = userRepository.save(User.builder()
+                .email("example@example.com")
+                .password(new BCryptPasswordEncoder().encode("qwer1234"))
+                .build());
+    }
+
     @Test
     @Transactional
     @DisplayName("전체 입출금 내역 리스트")
@@ -38,6 +56,7 @@ class TransactionServiceTest {
             String description = "Description - " + i;
 
             Transaction transaction = Transaction.builder()
+                    .user(user)
                     .data(LocalDate.parse(date, formatter))
                     .amount(amount)
                     .description(description)
@@ -45,7 +64,6 @@ class TransactionServiceTest {
 
             transactions.add(transaction);
         }
-
         transactionRepository.saveAll(transactions);
 
         assertEquals(transactionService.getTransactions().size(), transactions.size());
@@ -55,6 +73,7 @@ class TransactionServiceTest {
     @Transactional
     @DisplayName("입출금 내역 저장")
     void addTransaction() {
+        Long userId = user.getId();
         String date = "2022-01-01";
         int amount = 1000;
         String description = "description";
@@ -66,6 +85,7 @@ class TransactionServiceTest {
 
         Transaction result = transactionService.addTransaction(request);
 
+        assertEquals(userId, result.getUser().getId());
         assertEquals(date, result.getDate().format(formatter));
         assertEquals(amount, result.getAmount());
         assertEquals(description, result.getDescription());

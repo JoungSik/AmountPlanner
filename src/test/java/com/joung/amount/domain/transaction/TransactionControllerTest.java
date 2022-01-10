@@ -1,6 +1,7 @@
 package com.joung.amount.domain.transaction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.joung.amount.security.JwtProperties.TOKEN_PREFIX;
+import static com.joung.amount.security.JwtProperties.createToken;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -27,12 +31,21 @@ class TransactionControllerTest {
     @Autowired
     private TransactionService transactionService;
 
+    private String token;
+
+    @BeforeEach
+    @Transactional
+    void setUser() {
+        token = createToken("example@example.com");
+    }
+
     @Test
     @DisplayName("GET /transactions")
     void getTransactions() throws Exception {
         List<Transaction> result = transactionService.getTransactions();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/transactions"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/transactions")
+                        .header("Authorization", TOKEN_PREFIX + token))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(result.size()));
     }
@@ -55,7 +68,8 @@ class TransactionControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", TOKEN_PREFIX + token))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.date").value(date))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(amount))
