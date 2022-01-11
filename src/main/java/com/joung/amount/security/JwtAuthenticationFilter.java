@@ -16,15 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.joung.amount.security.JwtProperties.*;
-
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
+    private JwtProperties jwtProperties;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtProperties jwtProperties) {
         this.authenticationManager = authenticationManager;
+        this.jwtProperties = jwtProperties;
     }
 
     /* Trigger when we issue POST request to /login
@@ -56,9 +56,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserPrincipal principal = (UserPrincipal) authResult.getPrincipal();
 
         // Create JWT Token
-        String token = createToken(principal.getUsername());
+        String token = jwtProperties.createToken(principal.getUsername());
 
         // Add token in response
-        response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        response.addHeader(jwtProperties.HEADER_STRING, jwtProperties.TOKEN_PREFIX + token);
     }
 }

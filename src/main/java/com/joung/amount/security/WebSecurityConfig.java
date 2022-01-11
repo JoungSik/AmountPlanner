@@ -22,11 +22,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private UserPrincipalDetailsService userPrincipalDetailsService;
     private UserRepository userRepository;
+    private JwtProperties jwtProperties;
 
     @Autowired
-    public WebSecurityConfig(UserPrincipalDetailsService userPrincipalDetailsService, UserRepository userRepository) {
+    public WebSecurityConfig(UserPrincipalDetailsService userPrincipalDetailsService, UserRepository userRepository, JwtProperties jwtProperties) {
         this.userPrincipalDetailsService = userPrincipalDetailsService;
         this.userRepository = userRepository;
+        this.jwtProperties = jwtProperties;
     }
 
     @Override
@@ -40,8 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // remove csrf and state in session because in jwt we do not need them
                 .csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 // add jwt filters (1. authentication, 2. authorization)
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtProperties))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, jwtProperties))
                 .authorizeRequests()
                 // configure access rules
                 .antMatchers(HttpMethod.POST, "/users").permitAll()

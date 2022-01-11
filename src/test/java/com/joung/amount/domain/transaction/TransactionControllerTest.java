@@ -3,6 +3,7 @@ package com.joung.amount.domain.transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joung.amount.domain.user.User;
 import com.joung.amount.domain.user.UserRepository;
+import com.joung.amount.security.JwtProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,9 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.joung.amount.security.JwtProperties.TOKEN_PREFIX;
-import static com.joung.amount.security.JwtProperties.createToken;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 class TransactionControllerTest {
@@ -30,21 +28,23 @@ class TransactionControllerTest {
     private final ObjectMapper objectMapper;
     private final TransactionService transactionService;
     private final UserRepository userRepository;
+    private final JwtProperties jwtProperties;
 
     private String token;
 
     @Autowired
-    public TransactionControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, TransactionService transactionService, UserRepository userRepository) {
+    public TransactionControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, TransactionService transactionService, UserRepository userRepository, JwtProperties jwtProperties) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
         this.transactionService = transactionService;
         this.userRepository = userRepository;
+        this.jwtProperties = jwtProperties;
     }
 
     @BeforeEach
     void setUser() {
         String email = "example@example.com";
-        token = createToken(email);
+        token = jwtProperties.createToken(email);
         userRepository.save(User.builder()
                 .email(email)
                 .password(new BCryptPasswordEncoder().encode("qwer1234"))
@@ -62,7 +62,7 @@ class TransactionControllerTest {
         List<Transaction> result = transactionService.getTransactions("example@example.com");
 
         mockMvc.perform(MockMvcRequestBuilders.get("/transactions")
-                        .header("Authorization", TOKEN_PREFIX + token))
+                        .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(result.size()));
     }
@@ -86,7 +86,7 @@ class TransactionControllerTest {
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("Authorization", TOKEN_PREFIX + token))
+                        .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.date").value(date))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(amount))

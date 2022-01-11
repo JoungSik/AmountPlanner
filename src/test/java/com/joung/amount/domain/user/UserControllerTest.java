@@ -1,6 +1,7 @@
 package com.joung.amount.domain.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joung.amount.security.JwtProperties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,14 @@ class UserControllerTest {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
+    private final JwtProperties jwtProperties;
 
     @Autowired
-    public UserControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, UserRepository userRepository) {
+    public UserControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, UserRepository userRepository, JwtProperties jwtProperties) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
         this.userRepository = userRepository;
+        this.jwtProperties = jwtProperties;
     }
 
     @Test
@@ -59,7 +62,7 @@ class UserControllerTest {
     void login() throws Exception {
         String email = "example@example.com";
         String password = "qwer1234";
-        String token = TOKEN_PREFIX + createToken(email);
+        String token = jwtProperties.TOKEN_PREFIX + jwtProperties.createToken(email);
 
         userRepository.save(User.builder()
                 .email(email)
@@ -77,7 +80,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.header().stringValues(HEADER_STRING, token));
+                .andExpect(MockMvcResultMatchers.header().stringValues(jwtProperties.HEADER_STRING, token));
     }
 
 }
