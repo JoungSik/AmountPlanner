@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,18 +24,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TransactionServiceTest {
 
-    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    @Autowired
-    private TransactionService transactionService;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final TransactionService transactionService;
+    private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
 
     private User user;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    @Autowired
+    public TransactionServiceTest(TransactionService transactionService, TransactionRepository transactionRepository, UserRepository userRepository) {
+        this.transactionService = transactionService;
+        this.transactionRepository = transactionRepository;
+        this.userRepository = userRepository;
+    }
 
     @BeforeEach
     @Transactional
@@ -48,23 +51,10 @@ class TransactionServiceTest {
     @Transactional
     @DisplayName("전체 입출금 내역 리스트")
     void getTransactions() {
-        List<Transaction> transactions = new ArrayList<>();
-
-        for (int i = 1; i <= 3; i++) {
-            String date = "2022-01-0" + i;
-            int amount = i * 1000;
-            String description = "Description - " + i;
-
-            Transaction transaction = Transaction.builder()
-                    .user(user)
-                    .data(LocalDate.parse(date, formatter))
-                    .amount(amount)
-                    .description(description)
-                    .build();
-
-            transactions.add(transaction);
-        }
-        transactionRepository.saveAll(transactions);
+        List<Transaction> transactions = transactionRepository.findAll()
+                .stream()
+                .filter(transaction -> Objects.equals(user.getId(), transaction.getUser().getId()))
+                .collect(Collectors.toList());
 
         assertEquals(transactionService.getTransactions().size(), transactions.size());
     }

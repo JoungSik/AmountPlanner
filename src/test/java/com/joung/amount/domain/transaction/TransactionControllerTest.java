@@ -22,19 +22,20 @@ import static com.joung.amount.security.JwtProperties.createToken;
 @AutoConfigureMockMvc
 class TransactionControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private TransactionService transactionService;
+    private final MockMvc mockMvc;
+    private final ObjectMapper objectMapper;
+    private final TransactionService transactionService;
 
     private String token;
 
+    @Autowired
+    public TransactionControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, TransactionService transactionService) {
+        this.mockMvc = mockMvc;
+        this.objectMapper = objectMapper;
+        this.transactionService = transactionService;
+    }
+
     @BeforeEach
-    @Transactional
     void setUser() {
         token = createToken("example@example.com");
     }
