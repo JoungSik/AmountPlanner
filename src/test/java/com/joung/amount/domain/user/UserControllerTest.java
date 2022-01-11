@@ -57,10 +57,9 @@ class UserControllerTest {
     @Transactional
     @DisplayName("POST /login")
     void login() throws Exception {
-        String token = TOKEN_PREFIX + createToken("example@example.com");
-
         String email = "example@example.com";
         String password = "qwer1234";
+        String token = TOKEN_PREFIX + createToken(email);
 
         userRepository.save(User.builder()
                 .email(email)
