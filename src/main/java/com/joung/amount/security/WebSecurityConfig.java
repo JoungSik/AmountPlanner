@@ -40,14 +40,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // remove csrf and state in session because in jwt we do not need them
                 .csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 // add jwt filters (1. authentication, 2. authorization)
-                .addFilter(new JwtAuthenticationFilter(authenticationManager())).addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository)).authorizeRequests()
+                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+                .authorizeRequests()
                 // configure access rules
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers("/api/*").hasRole("USER");
-                // .antMatchers("/api/public/management/*").hasRole("MANAGER")
-                // .antMatchers("/api/public/admin/*").hasRole("ADMIN")
-                // .anyRequest().authenticated();
+                .antMatchers("/transactions").authenticated()
+                .antMatchers("/api/*").authenticated();
     }
 
     @Bean
