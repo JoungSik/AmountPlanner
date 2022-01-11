@@ -2,6 +2,7 @@ package com.joung.amount.domain.transaction;
 
 import com.joung.amount.domain.user.User;
 import com.joung.amount.domain.user.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,9 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -39,12 +38,16 @@ class TransactionServiceTest {
     }
 
     @BeforeEach
-    @Transactional
     void setUser() {
         user = userRepository.save(User.builder()
                 .email("example@example.com")
                 .password(new BCryptPasswordEncoder().encode("qwer1234"))
                 .build());
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
     }
 
     @Test
