@@ -23,8 +23,8 @@ public class TransactionController {
     }
 
     @GetMapping
-    public List<TransactionDto.Response> getTransactions() {
-        List<Transaction> transactions = transactionService.getTransactions();
+    public List<TransactionDto.Response> getTransactions(Principal principal) {
+        List<Transaction> transactions = transactionService.getTransactions(principal.getName());
         return transactions.stream().map(TransactionDto.Response::new).collect(Collectors.toList());
     }
 

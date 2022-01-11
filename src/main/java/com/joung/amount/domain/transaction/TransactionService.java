@@ -21,8 +21,9 @@ public class TransactionService {
         this.userRepository = userRepository;
     }
 
-    public List<Transaction> getTransactions() {
-        return transactionRepository.findAll();
+    public List<Transaction> getTransactions(String email) {
+        User user = userRepository.findUserByEmail(email);
+        return transactionRepository.findTransactionByUserId(user.getId());
     }
 
     public Transaction addTransaction(String email, TransactionDto.Request request) {

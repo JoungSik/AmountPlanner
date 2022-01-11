@@ -8,9 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,26 +20,24 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class TransactionServiceTest {
+class TransactionRepositoryTest {
 
-    private final TransactionService transactionService;
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
 
-    private User user;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private User user;
 
     @Autowired
-    public TransactionServiceTest(TransactionService transactionService, TransactionRepository transactionRepository, UserRepository userRepository) {
-        this.transactionService = transactionService;
+    public TransactionRepositoryTest(TransactionRepository transactionRepository, UserRepository userRepository) {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
     }
 
     @BeforeEach
-    void setUser() {
+    void setUp() {
         user = userRepository.save(User.builder()
                 .email("example@example.com")
                 .password(new BCryptPasswordEncoder().encode("qwer1234"))
@@ -76,42 +73,18 @@ class TransactionServiceTest {
 
     @AfterEach
     void tearDown() {
-        userRepository.deleteAll();
         transactionRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
-    @Transactional
-    @DisplayName("전체 입출금 내역 리스트")
-    void getTransactions() {
+    @DisplayName("입출금 내역 유저로 검색")
+    void findTransactionByUser() {
         List<Transaction> transactions = transactionRepository.findAll()
                 .stream()
                 .filter(transaction -> Objects.equals(user.getId(), transaction.getUser().getId()))
                 .collect(Collectors.toList());
 
-        assertEquals(transactionService.getTransactions(user.getEmail()).size(), transactions.size());
+        assertEquals(transactionRepository.findTransactionByUserId(user.getId()).size(), transactions.size());
     }
-
-    @Test
-    @Transactional
-    @DisplayName("입출금 내역 저장")
-    void addTransaction() {
-        Long userId = user.getId();
-        String date = "2022-01-01";
-        int amount = 1000;
-        String description = "description";
-
-        TransactionDto.Request request = new TransactionDto.Request();
-        request.setDate(date);
-        request.setAmount(amount);
-        request.setDescription(description);
-
-        Transaction result = transactionService.addTransaction(user.getEmail(), request);
-
-        assertEquals(userId, result.getUser().getId());
-        assertEquals(date, result.getDate().format(formatter));
-        assertEquals(amount, result.getAmount());
-        assertEquals(description, result.getDescription());
-    }
-
 }

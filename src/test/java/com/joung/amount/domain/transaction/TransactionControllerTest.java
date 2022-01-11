@@ -1,6 +1,9 @@
 package com.joung.amount.domain.transaction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joung.amount.domain.user.User;
+import com.joung.amount.domain.user.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -25,25 +29,37 @@ class TransactionControllerTest {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private final TransactionService transactionService;
+    private final UserRepository userRepository;
 
     private String token;
 
     @Autowired
-    public TransactionControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, TransactionService transactionService) {
+    public TransactionControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, TransactionService transactionService, UserRepository userRepository) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
         this.transactionService = transactionService;
+        this.userRepository = userRepository;
     }
 
     @BeforeEach
     void setUser() {
-        token = createToken("example@example.com");
+        String email = "example@example.com";
+        token = createToken(email);
+        userRepository.save(User.builder()
+                .email(email)
+                .password(new BCryptPasswordEncoder().encode("qwer1234"))
+                .build());
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
     }
 
     @Test
     @DisplayName("GET /transactions")
     void getTransactions() throws Exception {
-        List<Transaction> result = transactionService.getTransactions();
+        List<Transaction> result = transactionService.getTransactions("example@example.com");
 
         mockMvc.perform(MockMvcRequestBuilders.get("/transactions")
                         .header("Authorization", TOKEN_PREFIX + token))
