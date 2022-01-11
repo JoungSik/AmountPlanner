@@ -76,7 +76,7 @@ class TransactionServiceTest {
         request.setAmount(amount);
         request.setDescription(description);
 
-        Transaction result = transactionService.addTransaction(request);
+        Transaction result = transactionService.addTransaction(user.getEmail(), request);
 
         assertEquals(userId, result.getUser().getId());
         assertEquals(date, result.getDate().format(formatter));

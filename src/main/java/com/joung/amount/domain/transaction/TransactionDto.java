@@ -1,5 +1,6 @@
 package com.joung.amount.domain.transaction;
 
+import com.joung.amount.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +20,9 @@ public class TransactionDto {
         private int amount;
         private String description;
 
-        public Transaction asEntity() {
+        public Transaction asEntity(User user) {
             return Transaction.builder()
+                    .user(user)
                     .data(LocalDate.parse(date, formatter))
                     .amount(amount)
                     .description(description)
