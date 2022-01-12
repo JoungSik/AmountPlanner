@@ -16,11 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private AuthenticationManager authenticationManager;
-    private JwtProperties jwtProperties;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProperties jwtProperties;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtProperties jwtProperties) {
         this.authenticationManager = authenticationManager;

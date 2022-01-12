@@ -20,16 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserPrincipalDetailsService userPrincipalDetailsService;
-    private UserRepository userRepository;
-    private JwtProperties jwtProperties;
-
-    @Autowired
-    public WebSecurityConfig(UserPrincipalDetailsService userPrincipalDetailsService, UserRepository userRepository, JwtProperties jwtProperties) {
-        this.userPrincipalDetailsService = userPrincipalDetailsService;
-        this.userRepository = userRepository;
-        this.jwtProperties = jwtProperties;
-    }
+    private final UserPrincipalDetailsService userPrincipalDetailsService;
+    private final UserRepository userRepository;
+    private final JwtProperties jwtProperties;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {

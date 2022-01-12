@@ -3,6 +3,7 @@ package com.joung.amount.security;
 import com.auth0.jwt.JWT;
 import com.joung.amount.domain.user.User;
 import com.joung.amount.domain.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,8 +20,8 @@ import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private UserRepository userRepository;
-    private JwtProperties jwtProperties;
+    private final UserRepository userRepository;
+    private final JwtProperties jwtProperties;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtProperties jwtProperties) {
         super(authenticationManager);

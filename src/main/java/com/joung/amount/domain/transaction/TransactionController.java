@@ -1,7 +1,6 @@
 package com.joung.amount.domain.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,12 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private TransactionService transactionService;
-
-    @Autowired
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
+    private final TransactionService transactionService;
 
     @GetMapping
     public List<TransactionDto.Response> getTransactions(Principal principal) {
