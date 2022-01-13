@@ -1,6 +1,5 @@
 package com.joung.amount.security;
 
-import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joung.amount.domain.user.UserDto;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +15,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
-import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProperties jwtProperties;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtProperties jwtProperties) {
         this.authenticationManager = authenticationManager;
+        this.jwtProperties = jwtProperties;
     }
 
     /* Trigger when we issue POST request to /login
@@ -58,9 +55,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserPrincipal principal = (UserPrincipal) authResult.getPrincipal();
 
         // Create JWT Token
-        String token = JWT.create().withSubject(principal.getUsername()).withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME)).sign(HMAC512(JwtProperties.SECRET.getBytes()));
+        String token = jwtProperties.createToken(principal.getUsername());
 
         // Add token in response
-        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + token);
+        response.addHeader(jwtProperties.HEADER_STRING, jwtProperties.TOKEN_PREFIX + token);
     }
 }

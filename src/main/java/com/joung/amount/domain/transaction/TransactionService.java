@@ -1,7 +1,8 @@
 package com.joung.amount.domain.transaction;
 
+import com.joung.amount.domain.user.User;
+import com.joung.amount.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,19 +11,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransactionService {
 
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    public TransactionService(TransactionRepository transactionRepository) {
-        this.transactionRepository = transactionRepository;
+    public List<Transaction> getTransactions(String email) {
+        User user = userRepository.findUserByEmail(email);
+        return transactionRepository.findTransactionByUserId(user.getId());
     }
 
-    public List<Transaction> getTransactions() {
-        return transactionRepository.findAll();
-    }
-
-    public Transaction addTransaction(TransactionDto.Request request) {
-        Transaction transaction = request.asEntity();
+    public Transaction addTransaction(String email, TransactionDto.Request request) {
+        User user = userRepository.findUserByEmail(email);
+        Transaction transaction = request.asEntity(user);
         return transactionRepository.save(transaction);
     }
 

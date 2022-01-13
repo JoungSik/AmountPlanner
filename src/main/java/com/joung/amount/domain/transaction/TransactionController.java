@@ -1,9 +1,10 @@
 package com.joung.amount.domain.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,25 +14,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private TransactionService transactionService;
-
-    @Autowired
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
+    private final TransactionService transactionService;
 
     @GetMapping
-    @ResponseBody
-    public List<TransactionDto.Response> getTransactions() {
-        List<Transaction> transactions = transactionService.getTransactions();
+    public List<TransactionDto.Response> getTransactions(Principal principal) {
+        List<Transaction> transactions = transactionService.getTransactions(principal.getName());
         return transactions.stream().map(TransactionDto.Response::new).collect(Collectors.toList());
     }
 
     @PostMapping
-    @ResponseBody
-    public TransactionDto.Response createTransaction(@RequestBody TransactionDto.Request request) {
-        System.out.println(request.getDate() + " / " + request.getAmount() + " / " + request.getDescription());
-        Transaction transaction = transactionService.addTransaction(request);
+    @ResponseStatus(HttpStatus.CREATED)
+    public TransactionDto.Response createTransaction(Principal principal, @RequestBody TransactionDto.Request request) {
+        Transaction transaction = transactionService.addTransaction(principal.getName(), request);
         return new TransactionDto.Response(transaction);
     }
 

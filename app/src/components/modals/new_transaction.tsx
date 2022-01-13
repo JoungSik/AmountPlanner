@@ -59,10 +59,7 @@ const NewTransactionModal = () => {
 
     return (
         <>
-            <Box minW="3xs" maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden"
-                 display={'flex'} alignItems={'center'} justifyContent={'center'} p={6}>
-                <Button colorScheme="teal" size="lg" onClick={onOpen}>입출금 추가</Button>
-            </Box>
+            <Button colorScheme="teal" size="lg" onClick={onOpen}>입출금 추가</Button>
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />

@@ -20,14 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserPrincipalDetailsService userPrincipalDetailsService;
-    private UserRepository userRepository;
-
-    @Autowired
-    public WebSecurityConfig(UserPrincipalDetailsService userPrincipalDetailsService, UserRepository userRepository) {
-        this.userPrincipalDetailsService = userPrincipalDetailsService;
-        this.userRepository = userRepository;
-    }
+    private final UserPrincipalDetailsService userPrincipalDetailsService;
+    private final UserRepository userRepository;
+    private final JwtProperties jwtProperties;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
@@ -40,14 +35,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // remove csrf and state in session because in jwt we do not need them
                 .csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 // add jwt filters (1. authentication, 2. authorization)
-                .addFilter(new JwtAuthenticationFilter(authenticationManager())).addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository)).authorizeRequests()
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtProperties))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, jwtProperties))
+                .authorizeRequests()
                 // configure access rules
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers("/api/*").hasRole("USER");
-                // .antMatchers("/api/public/management/*").hasRole("MANAGER")
-                // .antMatchers("/api/public/admin/*").hasRole("ADMIN")
-                // .anyRequest().authenticated();
+                .antMatchers("/transactions").authenticated()
+                .antMatchers("/api/*").authenticated();
     }
 
     @Bean
