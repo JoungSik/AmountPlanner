@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/transactions")
+@RequestMapping(path = "/api/transactions")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class TransactionController {
