@@ -30,7 +30,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Transaction> transactions;
 
+    @Column(unique = true)
     private String email;
+
     private String password;
 
     @Builder
