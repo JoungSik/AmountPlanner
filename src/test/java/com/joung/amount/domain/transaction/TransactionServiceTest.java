@@ -57,14 +57,14 @@ class TransactionServiceTest {
             if (i % 2 == 0) {
                 transaction = Transaction.builder()
                         .user(sampleUser)
-                        .data(LocalDate.parse("2022-01-0" + i, formatter))
+                        .data(LocalDate.parse("2021-02-0" + i, formatter))
                         .amount(1000 * i)
                         .description("description - " + i)
                         .build();
             } else {
                 transaction = Transaction.builder()
                         .user(user)
-                        .data(LocalDate.parse("2022-01-0" + i, formatter))
+                        .data(LocalDate.parse("2021-01-0" + i, formatter))
                         .amount(1000 * i)
                         .description("description - " + i)
                         .build();
@@ -84,12 +84,31 @@ class TransactionServiceTest {
     @Transactional
     @DisplayName("전체 입출금 내역 리스트")
     void getTransactions() {
+        LocalDate today = LocalDate.now();
+
         List<Transaction> transactions = transactionRepository.findAll()
                 .stream()
-                .filter(transaction -> Objects.equals(user.getId(), transaction.getUser().getId()))
+                .filter(transaction -> Objects.equals(user.getId(), transaction.getUser().getId()) &&
+                        Objects.equals(transaction.getDate().getYear(), today.getYear()))
                 .collect(Collectors.toList());
 
-        assertEquals(transactionService.getTransactions(user.getEmail()).size(), transactions.size());
+        assertEquals(transactionService.getTransactions(user.getEmail(), today.format(formatter)).size(), transactions.size());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("전체 입출금 내역 리스트 - 월 단위")
+    void getTransactionsWithMonth() {
+        LocalDate today = LocalDate.now();
+
+        List<Transaction> transactions = transactionRepository.findAll()
+                .stream()
+                .filter(transaction -> Objects.equals(user.getId(), transaction.getUser().getId()) &&
+                        Objects.equals(transaction.getDate().getYear(), today.getYear()) &&
+                        Objects.equals(transaction.getDate().getMonth(), today.getMonth()))
+                .collect(Collectors.toList());
+
+        assertEquals(transactionService.getTransactions(user.getEmail(), today.format(formatter)).size(), transactions.size());
     }
 
     @Test

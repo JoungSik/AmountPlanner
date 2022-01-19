@@ -59,9 +59,21 @@ class TransactionControllerTest {
     @Test
     @DisplayName("GET /api/transactions")
     void getTransactions() throws Exception {
-        List<Transaction> result = transactionService.getTransactions("example@example.com");
+        List<Transaction> result = transactionService.getTransactions("example@example.com", null);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/transactions")
+                        .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(result.size()));
+    }
+
+    @Test
+    @DisplayName("GET /api/transactions?date=")
+    void getTransactionsWithDate() throws Exception {
+        String date = "2022-01-01";
+        List<Transaction> result = transactionService.getTransactions("example@example.com", date);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/transactions?date=" + date)
                         .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(result.size()));
