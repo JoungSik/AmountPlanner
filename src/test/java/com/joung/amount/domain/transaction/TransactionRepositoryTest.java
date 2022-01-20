@@ -78,13 +78,16 @@ class TransactionRepositoryTest {
     }
 
     @Test
-    @DisplayName("입출금 내역 유저로 검색")
-    void findTransactionByUser() {
+    @DisplayName("입출금 내역 유저로 검색 - 월")
+    void findTransactionByUserIdAndDateBetween() {
+        LocalDate today = LocalDate.now();
+
         List<Transaction> transactions = transactionRepository.findAll()
                 .stream()
                 .filter(transaction -> Objects.equals(user.getId(), transaction.getUser().getId()))
                 .collect(Collectors.toList());
 
-        assertEquals(transactionRepository.findTransactionByUserId(user.getId()).size(), transactions.size());
+        assertEquals(transactionRepository.findTransactionByUserIdAndDateBetween(user.getId(), today.withDayOfMonth(1), today.withDayOfMonth(today.lengthOfMonth())).size(), transactions.size());
     }
+
 }

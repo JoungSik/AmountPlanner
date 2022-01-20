@@ -5,6 +5,8 @@ import com.joung.amount.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -14,9 +16,16 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
 
-    public List<Transaction> getTransactions(String email) {
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public List<Transaction> getTransactions(String email, String stringDate) {
         User user = userRepository.findUserByEmail(email);
-        return transactionRepository.findTransactionByUserId(user.getId());
+        if (stringDate != null) {
+            LocalDate date = LocalDate.parse(stringDate, formatter);
+            return transactionRepository.findTransactionByUserIdAndDateBetween(user.getId(), date.withDayOfMonth(1), date.withDayOfMonth(date.lengthOfMonth()));
+        } else {
+            return transactionRepository.findTransactionByUserId(user.getId());
+        }
     }
 
     public Transaction addTransaction(String email, TransactionDto.Request request) {

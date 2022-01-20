@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/transactions")
+@RequestMapping(path = "/api/transactions")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class TransactionController {
@@ -17,8 +17,8 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @GetMapping
-    public List<TransactionDto.Response> getTransactions(Principal principal) {
-        List<Transaction> transactions = transactionService.getTransactions(principal.getName());
+    public List<TransactionDto.Response> getTransactions(Principal principal, String date) {
+        List<Transaction> transactions = transactionService.getTransactions(principal.getName(), date);
         return transactions.stream().map(TransactionDto.Response::new).collect(Collectors.toList());
     }
 

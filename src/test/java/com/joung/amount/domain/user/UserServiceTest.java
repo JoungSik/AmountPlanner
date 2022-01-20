@@ -36,4 +36,22 @@ class UserServiceTest {
         assertNotNull(user.getId());
         assertEquals(email, user.getEmail());
     }
+
+    @Test
+    @Transactional
+    @DisplayName("유저 이메일 중복 체크")
+    void addUserDuplicationEmail() {
+        String email = "example@example.com";
+        String password = "qwer1234";
+
+        UserDto.Request request = new UserDto.Request();
+        request.setEmail(email);
+        request.setPassword(password);
+
+        userService.addUser(request);
+        User duplicationUser = userService.addUser(request);
+
+        assertNull(duplicationUser);
+    }
+
 }
